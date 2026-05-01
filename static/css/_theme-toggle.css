@@ -1,0 +1,150 @@
+/* ==========================================================================
+   _theme-toggle.css — Manuální Dark Mode Přepínač
+   ==========================================================================
+
+   Tento soubor doplňuje dark mode v _tokens.css o možnost ručního přepínání.
+
+   Jak to funguje:
+   ───────────────
+   _tokens.css má dark mode přes @media (prefers-color-scheme: dark) →
+   automaticky reaguje na systémové nastavení.
+
+   Tento soubor přidává data-theme atribut na <html> element →
+   uživatel může přepnout téma tlačítkem bez ohledu na systém.
+
+   Priorita:
+   ─────────
+   1. data-theme="dark"  → manuálně tmavé (přebije systémové)
+   2. data-theme="light" → manuálně světlé (přebije systémové)
+   3. (bez atributu)     → řídí se systémem (@media query)
+
+   HTML:
+   ─────
+   <html data-theme="light">  nebo  <html data-theme="dark">
+   JS přepíná: document.documentElement.dataset.theme = 'dark'
+
+   Přidej tento soubor do index.css:
+   ───────────────────────────────────
+   @import './_theme-toggle.css';   ← za _tokens.css
+   ========================================================================== */
+
+/* ==========================================================================
+   SVĚTLÉ TÉMA — explicitní (přebije systémový dark mode)
+   ========================================================================== */
+
+[data-theme="light"] {
+  --color-text-primary:   var(--_slate-900);
+  --color-text-secondary: var(--_slate-500);
+  --color-text-disabled:  var(--_slate-300);
+  --color-text-inverse:   #ffffff;
+
+  --color-bg-base:        #ffffff;
+  --color-bg-subtle:      var(--_slate-50);
+  --color-bg-muted:       var(--_slate-100);
+
+  --color-border:         var(--_slate-200);
+  --color-border-strong:  var(--_slate-300);
+
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+               0 2px 4px -2px rgba(0, 0, 0, 0.1);
+
+  --color-success-bg:     #dcfce7;
+  --color-success-fg:     #15803d;
+  --color-warning-bg:     #fef9c3;
+  --color-warning-fg:     #a16207;
+  --color-error-bg:       #fee2e2;
+  --color-error-fg:       #b91c1c;
+  --color-error-focus:    rgba(239, 68, 68, 0.1);
+}
+
+/* ==========================================================================
+   TMAVÉ TÉMA — explicitní (přebije systémové světlé)
+   ========================================================================== */
+
+[data-theme="dark"] {
+  --color-text-primary:   var(--_slate-50);
+  --color-text-secondary: var(--_slate-300);
+  --color-text-disabled:  var(--_slate-700);
+  --color-text-inverse:   var(--_slate-900);
+
+  --color-bg-base:        var(--_slate-900);
+  --color-bg-subtle:      var(--_slate-800);
+  --color-bg-muted:       var(--_slate-700);
+
+  --color-border:         var(--_slate-700);
+  --color-border-strong:  var(--_slate-500);
+
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4),
+               0 2px 4px -2px rgba(0, 0, 0, 0.4);
+
+  --color-success-bg:     #14532d;
+  --color-success-fg:     #86efac;
+  --color-warning-bg:     #713f12;
+  --color-warning-fg:     #fde68a;
+  --color-error-bg:       #7f1d1d;
+  --color-error-fg:       #fca5a5;
+  --color-error-focus:    rgba(239, 68, 68, 0.2);
+}
+
+/* ==========================================================================
+   TOGGLE TLAČÍTKO — Styly
+   ==========================================================================
+
+   HTML:
+   <button class="theme-toggle" aria-label="Přepnout téma" type="button">
+     <span class="theme-toggle__icon theme-toggle__icon--sun">☀️</span>
+     <span class="theme-toggle__icon theme-toggle__icon--moon">🌙</span>
+   </button>
+
+   Nebo s SVG ikonami (doporučeno):
+   <button class="theme-toggle" aria-label="Přepnout téma" type="button">
+     <svg class="icon theme-toggle__icon theme-toggle__icon--sun">...</svg>
+     <svg class="icon theme-toggle__icon theme-toggle__icon--moon">...</svg>
+   </button>
+   ========================================================================== */
+
+@layer components {
+
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-muted);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: var(--transition-color), var(--transition-shadow);
+    flex-shrink: 0;
+  }
+
+  .theme-toggle:hover {
+    background: var(--color-bg-subtle);
+    border-color: var(--color-border-strong);
+    color: var(--color-text-primary);
+  }
+
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 3px;
+  }
+
+  /* Výchozí zobrazení ikon — závisí na aktuálním tématu */
+
+  /* Světlý mód: zobraz ikonu měsíce (= klikni pro tmavý mód) */
+  .theme-toggle__icon--sun  { display: none; }
+  .theme-toggle__icon--moon { display: block; }
+
+  /* Tmavý mód: zobraz ikonu slunce (= klikni pro světlý mód) */
+  [data-theme="dark"] .theme-toggle__icon--sun  { display: block; }
+  [data-theme="dark"] .theme-toggle__icon--moon { display: none; }
+
+  /* Systémový dark mode (bez data-theme atributu) */
+  @media (prefers-color-scheme: dark) {
+    :not([data-theme]) .theme-toggle__icon--sun  { display: block; }
+    :not([data-theme]) .theme-toggle__icon--moon { display: none; }
+  }
+
+}

@@ -1,0 +1,375 @@
+/* ==========================================================================
+   _reset.css — Modern CSS Reset & Base Styles
+   ==========================================================================
+
+   Proč reset?
+   -----------
+   Každý prohlížeč má své výchozí styly (User Agent Stylesheet). Reset je
+   sjednotí na konzistentní základ. Toto NENÍ "nuke everything" jako starý
+   reset.css — je to moderní neutrální baseline.
+
+   Principy tohoto resetu:
+   - Sjednotit chování prohlížečů (box model, fonty, mezery)
+   - Nastavit rozumné výchozí hodnoty platné pro 95 % projektů
+   - NEZASAHOVAT do vizuálního designu — žádná opinionated rozhodnutí
+   - Vše co je "opinionated" patří do .prose, komponent nebo _project.css
+
+   Inspirováno: Josh W. Comeau's Custom CSS Reset + Andy Bell's Modern Reset
+
+   Designová rozhodnutí:
+   - <p> nemá globální max-width. Pro čitelnou šířku textu použij
+     utility .prose-width nebo wrapper .prose. Vyhneme se tak cascade
+     konfliktům uvnitř karet, modalů a dashboardů.
+   - svg { fill: currentColor } je scopované na .icon, aby se nelámaly
+     inline SVG s vlastními fill atributy.
+   ========================================================================== */
+
+
+@layer reset {
+  /* ==========================================================================
+     1. BOX MODEL
+     ==========================================================================
+     Problém: výchozí box-sizing je "content-box", kde padding a border
+     se přičítají k šířce. Prvek s width: 200px a padding: 20px
+     má výslednou šířku 240px — neintuitivní!
+
+     Řešení: border-box → šířka zahrnuje padding i border.
+     width: 200px + padding: 20px = stále 200px celkem.
+     ========================================================================== */
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  /* ==========================================================================
+     2. ZÁKLADNÍ ELEMENTY
+     ========================================================================== */
+
+  html {
+    /* Zabraňuje zvětšení fontu při otočení telefonu na iOS */
+    -webkit-text-size-adjust: 100%;
+
+    /* Plynulé scrollování na celé stránce (hash linky, JS scroll) */
+    scroll-behavior: smooth;
+
+    /* Lepší font rendering na macOS */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Výška řádku jako základ — přepíše prohlížečový default */
+    line-height: var(--leading-normal, 1.5);
+  }
+
+  body {
+    /* Nulujeme margin, který prohlížeč přidává */
+    margin: 0;
+
+    /* Základní typografické nastavení z tokenů */
+    font-family: var(--font-sans, sans-serif);
+    font-size: var(--text-base, 1rem);
+    color: var(--color-text-primary, #0f172a);
+    background-color: var(--color-bg-base, #ffffff);
+
+    /* min-height: 100svh zajistí, že body pokryje celou výšku viewportu.
+       svh = "small viewport height" — řeší problém s mobilními prohlížeči,
+       kde "100vh" může zahrnout nebo nezahrnout adresní řádek. */
+    min-height: 100svh;
+  }
+
+  /* ==========================================================================
+     3. TYPOGRAFIE
+     ========================================================================== */
+
+  /* Nadpisy — resetujeme výchozí margin, font-size definuje projekt */
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    font-weight: var(--weight-bold, 700);
+    line-height: var(--leading-tight, 1.25);
+
+    /* Automatický kerning pro velká písma — moderní vlastnost */
+    text-wrap: balance;
+    /*
+      text-wrap: balance rozdělí text v nadpisu rovnoměrně mezi řádky.
+      Zabraňuje "sirotčím" slovům na posledním řádku.
+      Funguje jen pro krátké texty (max ~6 řádků) — proto bezpečné na nadpisy.
+    */
+  }
+
+  /* Odstavce
+     ─────────────────────────────────────────────────────────────────────────
+     ZÁMĚRNĚ bez max-width — to je opinionated rozhodnutí které patří jinam:
+       → čtený obsah (články, blog):    .prose p { max-width: 65ch }
+       → konkrétní místo v projektu:    utility třída .prose-width (viz sekce 7)
+
+     Proč ne globálně? Protože <p> se používá v kartách, formulářích,
+     footerech, modalech, dashboardech — a tam 65ch nechceme.
+     Globální max-width by znamenalo psát override na desítkách míst.
+     ──────────────────────────────────────────────────────────────────────── */
+  p {
+    margin: 0;
+    text-wrap: pretty;
+    /*
+      text-wrap: pretty zabraňuje sirotčím slovům v odstavcích (jedno slovo
+      na posledním řádku). Je pomalejší než "balance", ale vhodný pro odstavce.
+      Na rozdíl od max-width je to čistě typografické zlepšení bez side efektů.
+    */
+  }
+
+  /* Linky */
+  a {
+    color: var(--color-primary, #3b82f6);
+    text-decoration: underline;
+    text-decoration-color: transparent; /* Podtržení viditelné jen na hover */
+    transition: var(--transition-color, color 200ms ease-out);
+  }
+
+  a:hover {
+    color: var(--color-primary-hover, #2563eb);
+    text-decoration-color: currentColor;
+  }
+
+  /* Přístupný focus styl — NIKDY nedávat outline: none bez náhrady!
+     ─────────────────────────────────────────────────────────────────────────
+     :focus-visible se aktivuje jen při navigaci klávesnicí / asistenčních
+     technologiích, ne při kliknutí myší. Správné moderní chování.
+     ──────────────────────────────────────────────────────────────────────── */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--color-border-focus, #3b82f6);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Inline kód */
+  code {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.9em; /* em = relativní k rodičovskému fontu */
+    background: var(--color-bg-muted, #f1f5f9);
+    padding: 0.125em 0.375em;
+    border-radius: var(--radius-sm, 4px);
+    color: var(--color-primary-dark, #1d4ed8);
+  }
+
+  /* Blokový kód */
+  pre {
+    font-family: var(--font-mono, monospace);
+    overflow-x: auto; /* Horizontální scroll pro dlouhé řádky */
+    background: var(--color-bg-muted, #f1f5f9);
+    padding: var(--space-4, 1rem);
+    border-radius: var(--radius-md, 8px);
+    border-left: 3px solid var(--color-primary, #3b82f6);
+  }
+
+  pre code {
+    /* Resetujeme styling inline kódu uvnitř pre */
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    color: inherit;
+    font-size: var(--text-sm, 0.875rem);
+  }
+
+  /* ==========================================================================
+     4. MEDIA ELEMENTY
+     ========================================================================== */
+
+  /*
+    Problém: img, video atd. jsou inline elementy.
+    Inline elementy mají "baseline gap" — mezera pod obrázkem.
+    display: block to opraví.
+
+    max-width: 100% zabrání přetékání z kontejneru.
+  */
+  img,
+  video,
+  svg,
+  canvas,
+  audio,
+  iframe,
+  embed,
+  object {
+    display: block;
+    max-width: 100%;
+  }
+
+  img,
+  video {
+    /* Zachová poměr stran při změně šířky */
+    height: auto;
+  }
+
+  /* SVG ikonky — fill scopován POUZE na třídu .icon
+     ─────────────────────────────────────────────────────────────────────────
+     Proč NE globální svg { fill: currentColor }?
+
+     Globální pravidlo rozbíjí:
+     - Vícebarevná SVG (loga, ilustrace, infografiky)
+     - SVG používající stroke místo fill (Heroicons, Lucide, Feather ikony)
+     - SVG s pevnými barvami (grafy, mapy, brand assets)
+
+     Správné řešení: opt-in třída .icon říká
+     "toto SVG je jednobarevná ikonka a má dědit barvu z textu".
+
+     Použití:
+       <svg class="icon" aria-hidden="true">...</svg>
+       nebo jako wrapper:
+       <span class="icon"><svg>...</svg></span>
+     ──────────────────────────────────────────────────────────────────────── */
+  .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Nesmršťovat se ve flex kontejnerech */
+  }
+
+  svg.icon,
+  .icon > svg {
+    fill: currentColor;
+    stroke: currentColor;  /* Pro outline ikony (Lucide, Heroicons, Tabler...) */
+    width: 1em;   /* Relativní k fontu — ikonka stejně velká jako text */
+    height: 1em;
+  }
+
+  /* ==========================================================================
+     5. FORMULÁŘOVÉ ELEMENTY
+     ========================================================================== */
+
+  /* Formulářové prvky nedědí font z body — opravíme to */
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit; /* Zdědí font-family, font-size, line-height */
+    color: inherit;
+  }
+
+  /* Odstraní výchozí outer glow na textaree v Chromu */
+  textarea {
+    resize: vertical; /* Umožní jen vertikální resize */
+  }
+
+  /* Tlačítka */
+  button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+    /* Tlačítka bez vlastního stylingu jsou transparentní základ */
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  /* ==========================================================================
+     6. LISTY A TABULKY
+     ========================================================================== */
+
+  /* Listy v navigaci nebo UI nemají mít odrážky — aplikuj tam list-style: none */
+  /* Tady ponecháme výchozí pro obsah (článek, blog atd.) */
+  ul, ol {
+    padding-left: var(--space-6, 1.5rem);
+    margin: 0;
+  }
+
+  li + li {
+    /* Mezera mezi položkami listu */
+    margin-top: var(--space-1, 0.25rem);
+  }
+
+  /* Tabulky */
+  table {
+    border-collapse: collapse; /* Sloučí border mezi buňkami */
+    width: 100%;
+  }
+
+  th, td {
+    padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+    text-align: left;
+    border-bottom: 1px solid var(--color-border, #e2e8f0);
+  }
+
+  th {
+    font-weight: var(--weight-semibold, 600);
+    color: var(--color-text-secondary, #64748b);
+    font-size: var(--text-sm, 0.875rem);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider, 0.05em);
+  }
+
+  /* ==========================================================================
+     7. POMOCNÉ UTILITY TŘÍDY
+     ==========================================================================
+     Drobné třídy pro časté potřeby. Nejde o Tailwind — jen pár základů.
+     ========================================================================== */
+
+  /* Vizuálně skrytý, ale čitelný screen readery — pro přístupnost */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Oříznutí textu na jeden řádek s "..." */
+  .truncate {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* Vícenásobné oříznutí textu na N řádků */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+
+  /* Omezení šířky textu pro čitelnost (opt-in náhrada za dřívější globální pravidlo)
+     ─────────────────────────────────────────────────────────────────────────────────
+     Použij explicitně tam kde chceš prose-style čitelnost bez třídy .prose.
+
+     Příklady:
+       <p class="prose-width">Úvodní text sekce...</p>
+       <div class="hero__perex prose-width">...</div>
+
+     Klíčový rozdíl oproti globálnímu pravidlu:
+       Opt-in (musíš přidat třídu) > Opt-out (musíš přidávat override všude)
+     ──────────────────────────────────────────────────────────────────────────── */
+  .prose-width {
+    max-width: var(--prose-width, 65ch);
+  }
+
+  /* Zrušení animací pro uživatele, kteří to preferují (přístupnost) */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+}

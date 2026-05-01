@@ -1,0 +1,428 @@
+/* ==========================================================================
+   _grid.css — CSS Grid Systém
+   ==========================================================================
+
+   CSS Grid vs. Flexbox — kdy co použít?
+   ----------------------------------------
+   GRID:    Dvourozměrné layouty (řádky I sloupce najednou).
+            "Mám layout stránky, kde potřebuji zarovnat věci v obou osách."
+
+   FLEXBOX: Jednorozměrné layouty (buď řádek, nebo sloupec).
+            "Mám navigaci nebo skupinu karet v řadě."
+
+   V praxi se kombinují — Grid pro makro layout, Flex pro komponenty uvnitř.
+
+   Konvence pojmenování:
+   ---------------------
+   .grid-*         → utility třídy pro rychlé použití
+   .layout-*       → pojmenované layouty pro konkrétní účely
+   ========================================================================== */
+
+
+@layer layout {
+  /* ==========================================================================
+     ZÁKLADNÍ GRID KONTEJNER
+     ========================================================================== */
+
+  /*
+    .grid je základní grid kontejner bez přednastavených sloupců.
+    Používej ho s modifikátory níže.
+  */
+  .grid {
+    display: grid;
+    gap: var(--space-6, 1.5rem); /* Výchozí mezera (lze přepsat) */
+  }
+
+  /* Varianty mezer */
+  .grid--gap-sm  { gap: var(--space-2, 0.5rem); }
+  .grid--gap-md  { gap: var(--space-4, 1rem); }
+  .grid--gap-lg  { gap: var(--space-8, 2rem); }
+  .grid--gap-xl  { gap: var(--space-12, 3rem); }
+  .grid--gap-none { gap: 0; }
+
+  /* Různé mezery pro osy (column-gap / row-gap) */
+  .grid--gap-x-sm  { column-gap: var(--space-2); }
+  .grid--gap-x-lg  { column-gap: var(--space-8); }
+  .grid--gap-y-sm  { row-gap: var(--space-2); }
+  .grid--gap-y-lg  { row-gap: var(--space-8); }
+
+  /* ==========================================================================
+     PEVNÉ SLOUPCE
+     ==========================================================================
+     Tyto třídy definují pevný počet sloupců bez ohledu na šířku.
+     Vhodné pro layouty, kde počet sloupců řídíš media queries.
+     ========================================================================== */
+
+  /* repeat(N, 1fr) = N stejně širokých sloupců, každý zabere zlomek prostoru */
+  .grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+  .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .grid-cols-5 { grid-template-columns: repeat(5, 1fr); }
+  .grid-cols-6 { grid-template-columns: repeat(6, 1fr); }
+  .grid-cols-12 { grid-template-columns: repeat(12, 1fr); } /* Klasický 12-col */
+
+  /* ==========================================================================
+     AUTO-FIT vs AUTO-FILL — Responzivní mřížka BEZ media queries
+     ==========================================================================
+
+     Toto je jeden z nejsilnějších triků moderního CSS.
+
+     Syntaxe:
+       grid-template-columns: repeat(auto-fit, minmax(MIN, 1fr))
+
+     - MIN = minimální šířka jednoho sloupce
+     - Prohlížeč sám vypočítá, kolik sloupců se vejde
+     - Sloupce se automaticky zalamují
+
+     auto-fit vs auto-fill:
+     ┌─────────────────────────────────────────────────────────────┐
+     │ auto-fill: Vytvoří tolik sloupců, kolik se vejde,          │
+     │            i prázdné (ale ty nezabírají vizuální prostor).  │
+     │            Použij, když chceš items zarovnat doleva.        │
+     │                                                             │
+     │ auto-fit:  Prázdné sloupce "zaniknou" a zbývající          │
+     │            se roztáhnou na celou šířku.                     │
+     │            Použij, když chceš items vycentrovat/roztáhnout. │
+     └─────────────────────────────────────────────────────────────┘
+
+     Příklady použití:
+       <div class="grid-auto-sm">  → karty min 200px, bez media queries
+       <div class="grid-auto-md">  → karty min 280px
+       <div class="grid-auto-lg">  → karty min 360px
+     ========================================================================== */
+
+  /* Miniaturní items (ikony, tagy) — min 120px */
+  .grid-auto-xs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--space-4, 1rem);
+  }
+
+  /* Malé karty — min 180px (např. kategorie, features) */
+  .grid-auto-sm {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-4, 1rem);
+  }
+
+  /* Standardní karty — min 260px (blog posts, produkty) */
+  .grid-auto-md {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--space-6, 1.5rem);
+  }
+
+  /* Velké karty — min 340px (team, portfolio) */
+  .grid-auto-lg {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: var(--space-6, 1.5rem);
+  }
+
+  /* Maximálně 2 sloupce — min 300px (nejméně 300px, max 2 items v řadě) */
+  .grid-auto-2col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+    gap: var(--space-6, 1.5rem);
+    /*
+      min(300px, 100%) je důležitý trik!
+      Na velmi malých obrazovkách (< 300px) by minmax(300px, 1fr) způsobil
+      přetečení. min() zajistí, že se sloupec zmenší na 100% šířky kontejneru.
+    */
+  }
+
+  /* ==========================================================================
+     NAMED LAYOUT PATTERNS — Pojmenované layouty pro konkrétní účely
+     ==========================================================================
+     Tyto vzory jsou připravené pro typické situace.
+     ========================================================================== */
+
+  /* ────────────────────────────────────────────
+     HOLY GRAIL LAYOUT — Klasický layout stránky
+     ────────────────────────────────────────────
+     ┌─────────────────────────────────────────┐
+     │              HEADER                      │
+     ├──────────┬──────────────┬───────────────┤
+     │   ASIDE  │     MAIN     │     ASIDE     │
+     │ (sidebar)│   (content)  │   (sidebar)   │
+     ├──────────┴──────────────┴───────────────┤
+     │              FOOTER                      │
+     └─────────────────────────────────────────┘
+
+     HTML struktura:
+     <div class="layout-holy-grail">
+       <header>...</header>
+       <aside>...</aside>
+       <main>...</main>
+       <aside>...</aside>
+       <footer>...</footer>
+     </div>
+     ──────────────────────────────────────────── */
+  .layout-holy-grail {
+    display: grid;
+    grid-template-columns: 240px 1fr 240px; /* Sidebar | Content | Sidebar */
+    grid-template-rows: auto 1fr auto;       /* Header | Main | Footer */
+    grid-template-areas:
+      "header header  header"
+      "left   main    right"
+      "footer footer  footer";
+    min-height: 100svh;
+    gap: var(--space-6);
+  }
+
+  .layout-holy-grail > header  { grid-area: header; }
+  .layout-holy-grail > main    { grid-area: main; }
+  .layout-holy-grail > footer  { grid-area: footer; }
+  /* První aside = levý sidebar, druhý = pravý */
+  .layout-holy-grail > aside:first-of-type { grid-area: left; }
+  .layout-holy-grail > aside:last-of-type  { grid-area: right; }
+
+  /* Responzivní verze: pod 768px sloupce pod sebe */
+  @media (max-width: 768px) {
+    .layout-holy-grail {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "header"
+        "left"
+        "main"
+        "right"
+        "footer";
+    }
+  }
+
+  /* ────────────────────────────────────────────
+     SIDEBAR LAYOUT — Hlavní obsah + sidebar
+     ────────────────────────────────────────────
+     ┌────────────────────────┬───────────┐
+     │         MAIN           │  SIDEBAR  │
+     │                        │           │
+     └────────────────────────┴───────────┘
+
+     HTML struktura:
+     <div class="layout-sidebar">
+       <main>...</main>
+       <aside>...</aside>
+     </div>
+
+     Pro sidebar VLEVO — otočíme pořadí v HTML nebo použij:
+     .layout-sidebar--left > main  { order: 2; }
+     .layout-sidebar--left > aside { order: 1; }
+     ──────────────────────────────────────────── */
+  .layout-sidebar {
+    display: grid;
+    grid-template-columns: 1fr 280px; /* Obsah | Sidebar */
+    gap: var(--space-8);
+    align-items: start;
+    /*
+      align-items: start → sidebar a main se nezarovnají na stejnou výšku.
+      Bez toho by sidebar (kratší) se roztáhl na výšku mainu — nechceme to.
+    */
+  }
+
+  /* Varianta s širším sidebarem */
+  .layout-sidebar--wide {
+    grid-template-columns: 1fr 360px;
+  }
+
+  /* Varianta se sidebar vlevo */
+  .layout-sidebar--left {
+    grid-template-columns: 280px 1fr;
+  }
+
+  @media (max-width: 768px) {
+    .layout-sidebar,
+    .layout-sidebar--wide,
+    .layout-sidebar--left {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ────────────────────────────────────────────
+     PANCAKE STACK — Full-height stránka
+     ────────────────────────────────────────────
+     ┌─────────────────────────────────────────┐
+     │              HEADER (auto)              │
+     ├─────────────────────────────────────────┤
+     │                                          │
+     │              MAIN (1fr)                  │
+     │         (vyplní zbývající místo)         │
+     │                                          │
+     ├─────────────────────────────────────────┤
+     │              FOOTER (auto)              │
+     └─────────────────────────────────────────┘
+
+     Šikovné pro aplikace, dashboardy — footer vždy dole.
+     ──────────────────────────────────────────── */
+  .layout-pancake {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100svh;
+  }
+
+  /* ────────────────────────────────────────────
+     MASONRY-LIKE GRID — Asymetrický grid
+     ────────────────────────────────────────────
+     Různě velké buňky v mřížce (ne pravý masonry, ale blízko).
+     Vhodné pro portfolio, galerie, dashboard widgety.
+
+     Pomocné třídy pro span:
+     .col-span-2 → prvek zabere 2 sloupce
+     .row-span-2 → prvek zabere 2 řádky
+     ──────────────────────────────────────────── */
+  .grid-dashboard {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr); /* 12-sloupcový systém */
+    grid-auto-rows: minmax(80px, auto);
+    gap: var(--space-4);
+  }
+
+  /* Column span třídy */
+  .col-span-1  { grid-column: span 1; }
+  .col-span-2  { grid-column: span 2; }
+  .col-span-3  { grid-column: span 3; }
+  .col-span-4  { grid-column: span 4; }
+  .col-span-6  { grid-column: span 6; }
+  .col-span-8  { grid-column: span 8; }
+  .col-span-12 { grid-column: span 12; }
+  .col-full    { grid-column: 1 / -1; } /* Od první do poslední linie */
+
+  /* Row span třídy */
+  .row-span-1 { grid-row: span 1; }
+  .row-span-2 { grid-row: span 2; }
+  .row-span-3 { grid-row: span 3; }
+
+  /* ────────────────────────────────────────────
+     CENTERED HERO — Obsah uprostřed
+     ────────────────────────────────────────────
+     Vertikální i horizontální centrování s Grid.
+     Nejčistší způsob jak centrovat v CSS.
+     ──────────────────────────────────────────── */
+  .layout-center {
+    display: grid;
+    place-items: center; /* Zkratka pro align-items + justify-items */
+    min-height: 100svh;
+  }
+
+  /* Centrování bez min-height (pro sekce, karty) */
+  .layout-center-block {
+    display: grid;
+    place-items: center;
+    padding: var(--space-8);
+  }
+
+  /* ────────────────────────────────────────────
+     KONTEJNER — Omezení šířky obsahu
+     ────────────────────────────────────────────
+     Třídy pro omezení šířky stránky a horizontální centrování.
+     ──────────────────────────────────────────── */
+  .container {
+    width: 100%;
+    margin-inline: auto; /* Horizontální centrování */
+    padding-inline: var(--space-6, 1.5rem); /* Vnitřní odsazení na krajích */
+    max-width: var(--container-xl, 1280px);
+  }
+
+  .container--sm  { max-width: var(--container-sm, 640px); }
+  .container--md  { max-width: var(--container-md, 768px); }
+  .container--lg  { max-width: var(--container-lg, 1024px); }
+  .container--xl  { max-width: var(--container-xl, 1280px); }
+  .container--2xl { max-width: var(--container-2xl, 1536px); }
+  .container--prose { max-width: var(--prose-width, 65ch); }
+  .container--full { max-width: 100%; }
+
+  /* ────────────────────────────────────────────
+     SUBGRID — Zarovnání potomků na grid rodiče
+     ────────────────────────────────────────────
+     Subgrid je relativně nová funkce (2023, plná podpora).
+     Umožňuje vnořenému prvku "převzít" grid linky rodiče.
+
+     Problém bez subgrid:
+     Máš grid karet. Každá karta má obrázek, titulek, text, tlačítko.
+     Titulky karet mají různou délku → tlačítka nejsou zarovnaná.
+
+     Řešení se subgrid:
+     Karty sdílí řádkový grid rodiče → vše se zarovná.
+     ──────────────────────────────────────────── */
+
+  /*
+    HTML příklad:
+    <div class="grid-subgrid-parent">
+      <article class="grid-subgrid-item">
+        <img ...>
+        <h3>Krátký titulek</h3>
+        <p>Velmi dlouhý popis článku, který zabírá více řádků...</p>
+        <a href="#">Číst více</a>
+      </article>
+      <article class="grid-subgrid-item">
+        <img ...>
+        <h3>Velmi dlouhý titulek přes dva řádky</h3>
+        <p>Krátký popis.</p>
+        <a href="#">Číst více</a>
+      </article>
+    </div>
+  */
+
+  .grid-subgrid-parent {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    /* 4 řádky = obrázek | titulek | text | tlačítko */
+    grid-template-rows: auto;
+    gap: var(--space-6);
+  }
+
+  .grid-subgrid-item {
+    /* Každý item zabere 4 řádky z grid rodiče */
+    display: grid;
+    grid-row: span 4;
+    /* Subgrid: zdědí definici řádků z rodiče */
+    grid-template-rows: subgrid;
+    gap: var(--space-3);
+    align-items: start;
+  }
+
+  /* Poslední prvek (tlačítko) vždy na konci karty */
+  .grid-subgrid-item > *:last-child {
+    align-self: end;
+    margin-top: auto;
+  }
+
+  /* ==========================================================================
+     FLEXBOX UTILITIES
+     ==========================================================================
+     Flex je stále nepostradatelný pro komponenty (navigace, toolbar, tlačítka).
+     ========================================================================== */
+
+  .flex { display: flex; }
+  .flex-col { display: flex; flex-direction: column; }
+  .flex-wrap { flex-wrap: wrap; }
+  .flex-nowrap { flex-wrap: nowrap; }
+
+  /* Justify content */
+  .justify-start   { justify-content: flex-start; }
+  .justify-end     { justify-content: flex-end; }
+  .justify-center  { justify-content: center; }
+  .justify-between { justify-content: space-between; }
+  .justify-around  { justify-content: space-around; }
+  .justify-evenly  { justify-content: space-evenly; }
+
+  /* Align items */
+  .items-start    { align-items: flex-start; }
+  .items-end      { align-items: flex-end; }
+  .items-center   { align-items: center; }
+  .items-baseline { align-items: baseline; }
+  .items-stretch  { align-items: stretch; }
+
+  /* Grow / shrink */
+  .flex-1    { flex: 1 1 0%; }    /* Roste i smršťuje se, basis 0 */
+  .flex-auto { flex: 1 1 auto; }  /* Roste i smršťuje se, basis auto */
+  .flex-none { flex: none; }      /* Ani neroste ani se nesmršťuje */
+
+  /* Mezery ve flex */
+  .gap-xs { gap: var(--space-xs); }
+  .gap-sm { gap: var(--space-sm); }
+  .gap-md { gap: var(--space-md); }
+  .gap-lg { gap: var(--space-lg); }
+  .gap-xl { gap: var(--space-xl); }
+
+}

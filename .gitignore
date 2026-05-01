@@ -1,0 +1,17 @@
+# Node / npm
+node_modules/
+npm-debug.log*
+
+# PostCSS build output
+static/dist/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# Environment
+.env
+.env.local

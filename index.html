@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="cs" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="RavenGrid — moderní CSS framework postavený na nativních @layer, design tokenech a Container Queries.">
+  <title>RavenGrid</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="static/images/assets/ravenstern2.png">
+  <link rel="apple-touch-icon" href="static/images/assets/ravenstern2.png">
+
+  <!-- theme-toggle.js před CSS — zabrání bliknutí při načtení -->
+  <script src="static/js/theme-toggle.js"></script>
+
+  <!-- CSS knihovna -->
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <!-- Projektové styly -->
+  <link rel="stylesheet" href="static/css/_project.css">
+</head>
+<body>
+
+  <!-- BACKGROUND STACK -->
+  <div class="bg-stack" aria-hidden="true">
+    <div class="bg-stack__image"></div>
+    <div class="bg-stack__overlay"></div>
+    <div class="bg-stack__vignette"></div>
+  </div>
+
+
+  <!-- =====================================================================
+       HLAVNÍ OBSAH — showcase card
+       ===================================================================== -->
+  <main class="showcase-screen">
+
+    <div class="showcase-card">
+
+      <!-- ── HLAVIČKA — logo + název autora vlevo nahoře ──────────────── -->
+      <header class="showcase-header">
+        <a href="#" class="showcase-header__logo-link" aria-label="RavenGrid — domovská stránka">
+          <img class="showcase-header__icon"
+               src="static/images/assets/ravenstern2.png"
+               alt="Ravenstern logo"
+               width="44"
+               height="44">
+          <span class="showcase-header__title">Ravenstern</span>
+        </a>
+      </header>
+
+
+      <!-- ── DĚLICÍ LINKA ───────────────────────────────────────────────── -->
+      <hr class="hero-divider showcase-divider--header" aria-hidden="true">
+
+
+      <!-- ── TĚLO KARTY — dvě sekce 2:1 ───────────────────────────────── -->
+      <div class="showcase-body">
+
+        <!-- Levá sekce (2/3) — spotlight na RavenGrid -->
+        <section class="showcase-feature" aria-label="RavenGrid — CSS framework">
+
+          <div class="showcase-feature__badge">NEW</div>
+
+          <h2 class="showcase-feature__name">RAVENGRID</h2>
+          <p class="showcase-feature__subtitle">CSS Framework</p>
+
+          <p class="showcase-feature__desc">
+            Vrstvená CSS architektura postavená na nativních @layer, design
+            tokenech a Container Queries. Předvídatelná kaskáda bez
+            !important, dark mode v základu, volitelná PostCSS pipeline pro
+            produkci. Bez JavaScript frameworků — jen čisté, moderní CSS.
+          </p>
+
+          <div class="showcase-feature__actions">
+            <a href="https://github.com/R4V3NST3RN"
+               class="btn--showcase btn--showcase--ghost"
+               target="_blank"
+               rel="noopener noreferrer"
+               aria-label="RavenGrid na GitHubu">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                   fill="currentColor" width="16" height="16" aria-hidden="true">
+                <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839
+                         9.504.5.092.682-.217.682-.483
+                         0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608
+                         1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088
+                         2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951
+                         0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65
+                         0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59
+                         9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027
+                         2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028
+                         1.595 1.028 2.688 0 3.848-2.339 4.695-4.566
+                         4.943.359.309.678.92.678 1.855 0 1.338-.012
+                         2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02
+                         0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/>
+              </svg>
+              <span>GitHub</span>
+            </a>
+            <a href="https://ravenstern.com"
+               class="btn--showcase btn--showcase--primary"
+               target="_blank"
+               rel="noopener noreferrer">
+              <span class="btn--showcase__label">Ravenstern.com</span>
+              <span class="btn--showcase__arrow" aria-hidden="true">→</span>
+            </a>
+          </div>
+
+        </section>
+
+
+        <!-- Svislý dělič -->
+        <div class="showcase-divider--vertical" aria-hidden="true"></div>
+
+
+        <!-- Pravá sekce (1/3) — navigační tlačítka -->
+        <nav class="showcase-nav" aria-label="Sekce webu">
+
+          <a href="about.html" class="btn--portal">
+            <span class="btn--portal__label">About</span>
+            <span class="btn--portal__arrow" aria-hidden="true">→</span>
+          </a>
+
+          <a href="readme.html" class="btn--portal">
+            <span class="btn--portal__label">README</span>
+            <span class="btn--portal__arrow" aria-hidden="true">→</span>
+          </a>
+
+          <a href="credits.html" class="btn--portal">
+            <span class="btn--portal__label">Credits</span>
+            <span class="btn--portal__arrow" aria-hidden="true">→</span>
+          </a>
+
+        </nav>
+
+      </div><!-- /.showcase-body -->
+
+    </div><!-- /.showcase-card -->
+
+  </main>
+
+
+  <!-- THEME TOGGLE -->
+  <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Přepnout téma">
+    <svg class="icon theme-toggle__icon theme-toggle__icon--sun"
+         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4"/>
+      <line x1="12" y1="2"  x2="12" y2="4"/>
+      <line x1="12" y1="20" x2="12" y2="22"/>
+      <line x1="4.22"  y1="4.22"  x2="5.64"  y2="5.64"/>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+      <line x1="2"  y1="12" x2="4"  y2="12"/>
+      <line x1="20" y1="12" x2="22" y2="12"/>
+      <line x1="4.22"  y1="19.78" x2="5.64"  y2="18.36"/>
+      <line x1="18.36" y1="5.64"  x2="19.78" y2="4.22"/>
+    </svg>
+    <svg class="icon theme-toggle__icon theme-toggle__icon--moon"
+         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+         fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
+
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <p>© 2025 Ravenstern</p>
+  </footer>
+
+</body>
+</html>

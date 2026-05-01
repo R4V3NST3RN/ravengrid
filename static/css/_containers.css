@@ -1,0 +1,526 @@
+/* ==========================================================================
+   _containers.css — Container Queries
+   ==========================================================================
+
+   Proč container queries?
+   -----------------------
+   Klasický problém: Máš komponentu "Card", která vypadá dobře
+   jako úzký sloupec v sidebaru I jako široká karta v hlavním obsahu.
+
+   Bez container queries:
+     @media (min-width: 768px) { .card { ... } }
+     → "Je viewport alespoň 768px?" — ale karta v sidebaru
+       je malá i na velkém monitoru!
+
+   S container queries:
+     @container (min-width: 400px) { .card { ... } }
+     → "Je KONTEJNER karty alespoň 400px?" — funguje kdekoliv!
+
+   Komponenta se chová správně bez ohledu na to,
+   kde na stránce je umístěna.
+
+   ┌─────────────────────────────────────────────────────────────────┐
+   │  PRAVIDLO: Kontejner definuješ na RODIČI, query píšeš pro DÍTĚ │
+   └─────────────────────────────────────────────────────────────────┘
+
+   Podpora prohlížečů: Chrome 105+, Firefox 110+, Safari 16+
+   (tj. všechny moderní prohlížeče od r. 2022–2023)
+   ========================================================================== */
+
+
+@layer layout {
+  /* ==========================================================================
+     CONTAINER TYPES — Typy kontejnerů
+     ==========================================================================
+
+     container-type definuje, CO měříš:
+
+     inline-size  → měří šířku (nejčastější — téměř vždy tohle)
+     size         → měří šířku I výšku (pozor: zablokuje intrinsic height!)
+     normal       → výchozí (žádné dotazy, ale funguje container-name)
+     ========================================================================== */
+
+  /* ==========================================================================
+     READY-TO-USE KONTEJNEROVÉ WRAPPERY
+     ==========================================================================
+     Přidej tuto třídu na WRAPPER komponenty (ne na komponentu samotnou).
+
+     <div class="cq-wrapper">      ← tady definuješ kontejner
+       <article class="card">...</article>
+     </div>
+
+     Nebo pojmenovaný kontejner:
+     <section class="cq-named--sidebar">
+       <nav class="sidebar-nav">...</nav>
+     </section>
+     ========================================================================== */
+
+  /* Generický wrapper — pro majority případů */
+  .cq-wrapper {
+    container-type: inline-size;
+  }
+
+  /* Pojmenované kontejnery — dotazy pak mohou cílit konkrétní kontejner */
+  .cq-sidebar   { container-type: inline-size; container-name: sidebar; }
+  .cq-main      { container-type: inline-size; container-name: main-content; }
+  .cq-card      { container-type: inline-size; container-name: card; }
+  .cq-hero      { container-type: inline-size; container-name: hero; }
+  .cq-nav       { container-type: inline-size; container-name: navigation; }
+  .cq-gallery   { container-type: inline-size; container-name: gallery; }
+  .cq-form      { container-type: inline-size; container-name: form; }
+
+  /*
+    Proč pojmenované kontejnery?
+    ─────────────────────────────
+    @container (min-width: 400px) { ... }
+    → Dotaz na NEJBLIŽŠÍHO qualifying předka.
+
+    @container sidebar (min-width: 200px) { ... }
+    → Dotaz na kontejner s názvem "sidebar" — bez ohledu na vnořování.
+
+    Pojmenování je užitečné při složitém vnořování,
+    kde by bez jména mohl query trefit jiný kontejner.
+  */
+
+  /* ==========================================================================
+     BREAKPOINTY PRO CONTAINER QUERIES
+     ==========================================================================
+     Stejná logika jako u media queries — ale vztažená k šířce kontejneru.
+     Doporučené breakpointy (méně než u viewportu — komponenty jsou menší):
+       xs:  < 320px   (velmi malé — zjednodušená verze)
+       sm:  320–479px (malé — stack layout)
+       md:  480–639px (střední — hybrid)
+       lg:  640–849px (velké — full layout)
+       xl:  850px+    (maximální varianta)
+     ========================================================================== */
+
+  /* ==========================================================================
+     CARD KOMPONENTA — Ukázka container query v praxi
+     ==========================================================================
+
+     Tři layouty jedné karty:
+     - Malá (< 400px): Vertikální stack — obrázek nahoře
+     - Střední (400–600px): Horizontální — obrázek vlevo, text vpravo
+     - Velká (> 600px): Horizontální s více metadaty a akcemi
+
+     HTML:
+     <div class="cq-card">
+       <article class="card">
+         <div class="card__image"><img src="..." alt="..."></div>
+         <div class="card__body">
+           <span class="card__tag">Kategorie</span>
+           <h3 class="card__title">Titulek článku</h3>
+           <p class="card__text">Popis...</p>
+           <div class="card__footer">
+             <span class="card__meta">Autor · Datum</span>
+             <a href="#" class="card__link">Číst →</a>
+           </div>
+         </div>
+       </article>
+     </div>
+     ========================================================================== */
+
+  /* Základní karta — mobile-first (nejmenší varianta) */
+  .card {
+    background: var(--color-bg-base, #fff);
+    border: 1px solid var(--color-border, #e2e8f0);
+    border-radius: var(--radius-lg, 0.75rem);
+    overflow: hidden;
+    transition: var(--transition-base);
+  }
+
+  .card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  /* Výchozí: vertikální stack */
+  .card__image {
+    width: 100%;
+    aspect-ratio: 16 / 9; /* Zachová poměr stran obrázku */
+  }
+
+  .card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ořízne obrázek, nevytáhne ho */
+  }
+
+  .card__body {
+    padding: var(--space-4, 1rem);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .card__tag {
+    font-size: var(--text-xs, 0.75rem);
+    font-weight: var(--weight-semibold, 600);
+    color: var(--color-primary, #3b82f6);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider, 0.05em);
+  }
+
+  .card__title {
+    font-size: var(--text-lg, 1.125rem);
+    font-weight: var(--weight-bold, 700);
+    line-height: var(--leading-tight, 1.25);
+    color: var(--color-text-primary);
+  }
+
+  .card__text {
+    font-size: var(--text-sm, 0.875rem);
+    color: var(--color-text-secondary, #64748b);
+    line-height: var(--leading-relaxed, 1.625);
+
+    /* Zkrátíme na 3 řádky */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+
+  .card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .card__meta {
+    font-size: var(--text-xs, 0.75rem);
+    color: var(--color-text-secondary);
+  }
+
+  .card__link {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium, 500);
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  /* Skryjeme meta a link v nejmenší variantě — příliš malé */
+  @container card (max-width: 280px) {
+    .card__footer { display: none; }
+    .card__text   { -webkit-line-clamp: 2; }
+  }
+
+  /* Střední karta (400px+) → horizontální layout */
+  @container card (min-width: 400px) {
+    .card {
+      display: grid;
+      grid-template-columns: 180px 1fr; /* Obrázek | Obsah */
+    }
+
+    .card__image {
+      aspect-ratio: auto; /* Zrušíme pevný poměr, obrázek se přizpůsobí výšce */
+      height: 100%;
+    }
+
+    .card__body {
+      padding: var(--space-5, 1.25rem);
+    }
+
+    .card__title {
+      font-size: var(--text-xl, 1.25rem);
+    }
+
+    .card__text {
+      -webkit-line-clamp: 4;
+    }
+  }
+
+  /* Velká karta (640px+) → rozšířená verze */
+  @container card (min-width: 640px) {
+    .card {
+      grid-template-columns: 260px 1fr;
+    }
+
+    .card__body {
+      padding: var(--space-6, 1.5rem);
+      gap: var(--space-3, 0.75rem);
+    }
+
+    .card__title {
+      font-size: var(--text-2xl, 1.5rem);
+    }
+
+    .card__text {
+      -webkit-line-clamp: 5;
+    }
+
+    .card__link {
+      font-size: var(--text-base);
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-primary);
+      color: var(--color-text-inverse, #fff);
+      border-radius: var(--radius-md);
+      transition: var(--transition-color);
+    }
+
+    .card__link:hover {
+      background: var(--color-primary-hover);
+    }
+  }
+
+  /* ==========================================================================
+     NAVIGATION KOMPONENTA — Container-aware navigace
+     ==========================================================================
+     Navigace se mění podle šířky svého kontejneru — ne viewportu.
+     Ideální pro: header navigace, sekce s navigací, sidebar menu.
+
+     HTML:
+     <div class="cq-nav">
+       <nav class="nav">
+         <a href="#" class="nav__logo">Logo</a>
+         <button class="nav__toggle" aria-label="Menu">☰</button>
+         <ul class="nav__links">
+           <li><a href="#">Domů</a></li>
+           <li><a href="#">O nás</a></li>
+           <li><a href="#">Projekty</a></li>
+           <li><a href="#">Kontakt</a></li>
+         </ul>
+         <div class="nav__actions">
+           <a href="#" class="btn btn--primary">Kontaktovat</a>
+         </div>
+       </nav>
+     </div>
+     ========================================================================== */
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-6);
+    background: var(--color-bg-base);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .nav__logo {
+    font-weight: var(--weight-bold);
+    font-size: var(--text-xl);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  /* Hamburger tlačítko — viditelné jen v malé navigaci */
+  .nav__toggle {
+    margin-left: auto;
+    font-size: var(--text-xl);
+    display: block; /* Výchozí: viditelné */
+  }
+
+  .nav__links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: none; /* Výchozí: skrytá */
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .nav__links a {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    transition: var(--transition-color);
+  }
+
+  .nav__links a:hover {
+    color: var(--color-text-primary);
+    background: var(--color-bg-muted);
+  }
+
+  .nav__actions { display: none; }
+
+  /* Velký kontejner → horizontální full navigace */
+  @container navigation (min-width: 600px) {
+    .nav__toggle { display: none; } /* Schovat hamburger */
+
+    .nav__links {
+      display: flex;
+      flex-direction: row; /* Horizontálně */
+      align-items: center;
+      gap: var(--space-1);
+      margin-left: auto;
+    }
+
+    .nav__actions { display: flex; }
+  }
+
+  /* ==========================================================================
+     FORMA / FORMULÁŘ — Container-aware form layout
+     ==========================================================================
+     Formulář přizpůsobí počet sloupců své šířce.
+
+     HTML:
+     <div class="cq-form">
+       <form class="form-grid">
+         <div class="form-group">...</div>
+         <div class="form-group form-group--full">...</div>
+         ...
+       </form>
+     </div>
+     ========================================================================== */
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Výchozí: jeden sloupec */
+    gap: var(--space-4);
+  }
+
+  /* Střední kontejner → 2 sloupce */
+  @container form (min-width: 480px) {
+    .form-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* Pole přes celou šířku (jméno firmy, zpráva, ...) */
+    .form-group--full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* Velký kontejner → 3 sloupce */
+  @container form (min-width: 720px) {
+    .form-grid {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+
+  /* ==========================================================================
+     STAT / METRIC BOX — Container-aware statistiky
+     ==========================================================================
+     Krabičky s čísly a metrikami — mění orientaci a velikost textu.
+
+     HTML:
+     <div class="cq-wrapper">
+       <div class="stat-box">
+         <span class="stat-box__value">1,234</span>
+         <span class="stat-box__label">Celkem projektů</span>
+         <span class="stat-box__trend stat-box__trend--up">↑ 12%</span>
+       </div>
+     </div>
+     ========================================================================== */
+
+  .stat-box {
+    padding: var(--space-4);
+    background: var(--color-bg-base);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .stat-box__value {
+    font-size: var(--text-2xl);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-primary);
+    line-height: 1;
+  }
+
+  .stat-box__label {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .stat-box__trend {
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+  }
+
+  .stat-box__trend--up   { color: var(--color-success, #22c55e); }
+  .stat-box__trend--down { color: var(--color-error, #ef4444); }
+
+  /* Větší kontejner → trend inline, větší číslo */
+  @container (min-width: 200px) {
+    .stat-box {
+      padding: var(--space-5);
+    }
+
+    .stat-box__value {
+      font-size: var(--text-3xl);
+    }
+  }
+
+  @container (min-width: 300px) {
+    .stat-box {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-6);
+    }
+
+    .stat-box__value {
+      font-size: var(--text-4xl);
+    }
+
+    .stat-box__trend {
+      font-size: var(--text-sm);
+      align-self: flex-start;
+    }
+  }
+
+  /* ==========================================================================
+     CONTAINER QUERY UNITS — Jednotky relativní k kontejneru
+     ==========================================================================
+     Od Chrome 105, Firefox 110, Safari 16.
+
+     cqw  = 1% šířky kontejneru    (container query width)
+     cqh  = 1% výšky kontejneru    (container query height)
+     cqi  = 1% inline size         (= cqw pro horizontal writing mode)
+     cqb  = 1% block size          (= cqh pro horizontal writing mode)
+     cqmin = min(cqi, cqb)
+     cqmax = max(cqi, cqb)
+
+     Příklad: Nadpis, jehož velikost závisí na šířce kontejneru
+     (analogie k vw, ale pro kontejner místo viewportu).
+     ========================================================================== */
+
+  /* Fluid titulek škálující se s kontejnerem */
+  .cq-fluid-title {
+    font-size: clamp(
+      var(--text-xl, 1.25rem),  /* Minimum */
+      5cqi,                      /* Ideální: 5% inline size kontejneru */
+      var(--text-5xl, 3rem)     /* Maximum */
+    );
+    /*
+      clamp(MIN, IDEAL, MAX):
+      Hodnota bude IDEAL, ale nikdy méně než MIN nebo více než MAX.
+      5cqi = 5% šířky kontejneru.
+      Ve 400px kontejneru → 20px, v 800px → 40px, max 48px.
+    */
+  }
+
+  /* ==========================================================================
+     STYLE QUERIES — Dotazy na CSS hodnoty (experimentální)
+     ==========================================================================
+     Úplná novinka — dotazuješ se na CSS VLASTNOST kontejneru.
+     Podpora (4/2026): Chrome/Edge 111+, Safari 18+ (partial),
+     Firefox zatím nepodporuje. Používej jen jako progressive
+     enhancement, vždy se základním fallbackem.
+
+     Příklad: Pokud kontejner má --theme: dark, uprav potomka.
+     ========================================================================== */
+
+  /*
+  .themed-component {
+    container-type: inline-size;
+    --theme: light;
+  }
+
+  @container style(--theme: dark) {
+    .themed-component .icon {
+      filter: invert(1);
+    }
+  }
+  */
+
+}

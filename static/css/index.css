@@ -1,0 +1,219 @@
+/* ==========================================================================
+   index.css — Hlavní vstupní bod knihovny
+   ==========================================================================
+
+   KASKÁDOVÉ VRSTVY (@layer) — Jak to funguje
+   ─────────────────────────────────────────────
+   @layer explicitně definuje POŘADÍ PRIORITY stylů.
+   Vrstvy deklarované dříve mají NIŽŠÍ prioritu.
+
+   Pořadí (od nejnižší po nejvyšší prioritu):
+     reset      → normalizace prohlížečů
+     tokens     → design tokeny (:root proměnné)
+     layout     → grid, flex, container queries
+     components → UI komponenty (btn, card, input...)
+     utilities  → helper třídy (.sr-only, .truncate...)
+     prose      → typografie pro čtený obsah
+
+   ↑ Vše výše je z KNIHOVNY.
+   ↓ Projektové styly (_project.css) jsou MIMO vrstvy
+     → automaticky přebijí vše z knihovny bez !important.
+
+   Proč @layer místo pouhého pořadí importů?
+   - Pořadí importů je křehké — změna pořadí = nečekané přepsání
+   - @layer je explicitní a nezávislé na pořadí souborů
+   - Lépe funguje s third-party CSS (Bootstrap, ikonky...)
+   - Žádné !important hacky pro přebíjení komponent
+
+   Podpora: Chrome 99+, Firefox 97+, Safari 15.4+ (2022+)
+
+   Jak používat:
+   ─────────────
+   Varianta A — jeden soubor (nejjednodušší):
+     <link rel="stylesheet" href="css/index.css">
+
+   Varianta B — jen co potřebuješ:
+     <link rel="stylesheet" href="css/_tokens.css">
+     <link rel="stylesheet" href="css/_reset.css">
+     ... atd. (deklaraci @layer přidej do prvního souboru)
+
+   Varianta C — build tool (PostCSS, Vite...):
+     @import 'css/index.css';  → výsledek = jeden minifikovaný soubor
+   ========================================================================== */
+
+/* ==========================================================================
+   DEKLARACE POŘADÍ VRSTEV
+   ==========================================================================
+   MUSÍ být první (před @import i před samotnými pravidly).
+   Definuje pořadí priority — nezávisle na tom, kde jsou soubory importovány.
+   ========================================================================== */
+@layer reset, tokens, layout, components, utilities, prose;
+
+/* ==========================================================================
+   IMPORTY
+   ==========================================================================
+   Každý soubor obsahuje @layer { } wrapper — pořadí importů
+   proto neovlivňuje specificitu, pouze pořadí načítání.
+   ========================================================================== */
+
+/* — Fonty (načíst jako první — před tokeny) — */
+@import './_fonts.css';
+
+/* — Základ — */
+@import './_tokens.css';
+@import './_theme-toggle.css';
+@import './_reset.css';
+
+/* — Layout — */
+@import './_grid.css';
+@import './_containers.css';
+
+/* — UI Komponenty — */
+@import './_components.css';
+
+/* — Utility třídy — */
+@import './_utilities.css';
+
+/* ==========================================================================
+   PROSE — Styly pro formátovaný obsah
+   ==========================================================================
+   Vrstva "prose" má nejvyšší prioritu z knihovních vrstev.
+   Styly pro obsah generovaný z CMS, Markdownu nebo WYSIWYG editoru.
+
+   Použití:
+   <article class="prose">
+     <h1>Titulek článku</h1>
+     <p>Text...</p>
+   </article>
+   ========================================================================== */
+@layer prose {
+
+  .prose {
+    max-width: var(--prose-width, 65ch);
+    color: var(--color-text-primary);
+    line-height: var(--leading-normal);
+  }
+
+  /* "Lobotomized owl" selektor — mezera mezi každými dvěma sousedními prvky.
+     První prvek margin nedostane. Čistší než margin na každý element zvlášť. */
+  .prose > * + * {
+    margin-top: var(--space-4);
+  }
+
+  /* Nadpisy mají větší horní mezeru než ostatní prvky */
+  .prose h1, .prose h2, .prose h3 {
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-2);
+  }
+
+  /* První nadpis v prose nesmí mít horní mezeru navíc */
+  .prose > :first-child {
+    margin-top: 0;
+  }
+
+  .prose h1 { font-size: var(--text-4xl); letter-spacing: var(--tracking-tight); }
+  .prose h2 { font-size: var(--text-3xl); }
+  .prose h3 { font-size: var(--text-2xl); }
+  .prose h4 { font-size: var(--text-xl); }
+
+  /* Linky v prose — podtržení vždy viditelné
+     ─────────────────────────────────────────────────────────────────────
+     Globální reset schová podtržení (transparent) a zobrazí ho jen na hover.
+     To je fajn pro UI linky (navigace, tlačítka-linky), ale v čteném obsahu
+     je podtržení důležitý vizuální signál — zvlášť na touch zařízeních
+     kde hover neexistuje. Uživatel musí vědět co je odkaz bez kliknutí.
+     ──────────────────────────────────────────────────────────────────── */
+  .prose a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-decoration-color: currentColor; /* Vždy viditelné — ne transparent */
+    text-underline-offset: 3px;          /* Mezera mezi textem a podtržením */
+    text-decoration-thickness: 1px;      /* Tenká linka — elegantní, ne tučná */
+  }
+
+  .prose a:hover {
+    color: var(--color-primary-hover);
+    text-decoration-thickness: 2px;     /* Na hover trochu silnější */
+  }
+
+  .prose p {
+    max-width: var(--prose-width, 65ch); /* Jen zde — ne globálně v resetu */
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+  }
+
+  .prose ul, .prose ol {
+    padding-left: var(--space-6);
+    color: var(--color-text-secondary);
+  }
+
+  .prose li + li { margin-top: var(--space-2); }
+
+  .prose blockquote {
+    border-left: 4px solid var(--color-primary);
+    padding: var(--space-3) var(--space-5);
+    background: var(--color-bg-muted);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    font-style: italic;
+    color: var(--color-text-secondary);
+    margin: var(--space-6) 0;
+  }
+
+  .prose hr {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: var(--space-8) 0;
+  }
+
+  .prose table {
+    font-size: var(--text-sm);
+  }
+
+  .prose img {
+    border-radius: var(--radius-lg);
+    width: 100%;
+    height: auto;
+  }
+
+}
+
+/* ==========================================================================
+   GLOBÁLNÍ MEDIA QUERIES — Breakpointy na úrovni viewportu
+   ==========================================================================
+   Tyto styly jsou MIMO @layer — automaticky přebijí knihovní vrstvy.
+   Používej je pro globální změny závislé na viewportu.
+   Pro komponenty preferuj container queries v _containers.css.
+
+   Breakpointy:
+     sm:  640px   — velké telefony
+     md:  768px   — tablety
+     lg:  1024px  — malé laptopy
+     xl:  1280px  — desktopy
+     2xl: 1536px  — velké displeje
+
+   POZOR: Třídy jako .md:grid-cols-2 používají escaped dvojtečku (\:)
+   protože : není validní v CSS třídách bez escapování.
+   ========================================================================== */
+
+/* — Tablet (768px+) — */
+@media (min-width: 768px) {
+  :root {
+    --text-base: 1.0625rem; /* 17px — trochu větší na tabletů+ */
+  }
+
+  .container {
+    padding-inline: var(--space-8, 2rem);
+  }
+
+  .md\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .md\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .md\:grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* — Desktop (1024px+) — */
+@media (min-width: 1024px) {
+  .lg\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .lg\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .lg\:grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .lg\:grid-cols-5 { grid-template-columns: repeat(5, 1fr); }
+}

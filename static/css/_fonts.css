@@ -1,0 +1,176 @@
+/* ==========================================================================
+   _fonts.css — Načítání fontů
+   ==========================================================================
+
+   Tento soubor je ŠABLONA — při každém novém projektu:
+   1. Vymaž sekce fontů které nepoužíváš
+   2. Nahraď Google Fonts URL svými fonty
+   3. Nebo použij self-hosted variantu (doporučeno)
+
+   Proč self-hosting místo Google Fonts?
+   ──────────────────────────────────────
+   - Rychlejší: žádný DNS lookup na fonts.googleapis.com
+   - GDPR: IP adresa uživatele nejde na Google servery
+   - Spolehlivost: font je dostupný i offline / při výpadku CDN
+   - Kontrola: přesně víš jaké subséty a řezy máš k dispozici
+
+   Jak self-hostovat:
+   ──────────────────
+   1. Jdi na https://fonts.google.com → vyber font → "Download family"
+   2. Nebo použij https://gwfh.mranftl.com (Google Fonts Helper)
+      → stáhne fonty + vygeneruje @font-face CSS
+   3. Ulož fonty do složky /fonts/ v projektu
+   4. Uprav cesty v @font-face níže
+
+   Doporučené formáty (2026):
+   ──────────────────────────
+   .woff2  → primární, podporují všechny moderní prohlížeče
+   .woff   → fallback pro starší prohlížeče (volitelné)
+   .ttf    → jen pokud cílíš na velmi staré systémy (nepotřebné)
+
+   Pořadí importů:
+   ───────────────
+   Tento soubor musí být importován PŘED _tokens.css nebo jako první
+   import v index.css — fonty musí být dostupné než je tokeny použijí.
+   ========================================================================== */
+
+/* ==========================================================================
+   VARIANTA A — Google Fonts (rychlé, ale GDPR nevhodné pro EU weby)
+   ==========================================================================
+   Odkomentuj a uprav URL. display=swap zajistí že text je viditelný
+   i při načítání fontu (fallback font se zobrazí okamžitě).
+   ========================================================================== */
+
+/*
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+*/
+
+/* ==========================================================================
+   VARIANTA B — Self-hosted (doporučeno)
+   ==========================================================================
+   Struktura složky /fonts/:
+     fonts/
+       inter/
+         inter-regular.woff2
+         inter-medium.woff2
+         inter-semibold.woff2
+         inter-bold.woff2
+       fira-code/
+         fira-code-regular.woff2
+         fira-code-medium.woff2
+   ========================================================================== */
+
+/* ── SANS-SERIF — Inter (nebo nahraď svým) ──────────────────────────────── */
+
+/*
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter/inter-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter/inter-medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter/inter-semibold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter/inter-bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+/* ── MONOSPACE — Fira Code (nebo nahraď svým) ───────────────────────────── */
+
+/*
+@font-face {
+  font-family: 'Fira Code';
+  src: url('../fonts/fira-code/fira-code-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Fira Code';
+  src: url('../fonts/fira-code/fira-code-medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+/* ==========================================================================
+   SYSTEM FONT STACK — Fallback bez vlastních fontů
+   ==========================================================================
+   Pokud projekt žádné vlastní fonty nepotřebuje, použij system-ui stack.
+   Vypadá nativně na každém OS a načítá se okamžitě (žádný HTTP request).
+
+   macOS/iOS:  -apple-system (San Francisco)
+   Windows:    Segoe UI
+   Android:    Roboto
+   Linux:      Ubuntu, Cantarell...
+   ========================================================================== */
+
+/*
+  Jak použít v _tokens.css — nahraď výchozí --font-sans:
+
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont,
+               'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+               'Helvetica Neue', Arial, sans-serif;
+*/
+
+/* ==========================================================================
+   FONT DISPLAY STRATEGIE
+   ==========================================================================
+   font-display: swap  → text viditelný ihned (fallback font), pak swap
+                          Dobré pro: tělo textu, UI
+                          Riziko: FOUT (Flash of Unstyled Text)
+
+   font-display: block → prohlížeč čeká na font (max ~3s), pak swap
+                          Dobré pro: ikony, loga kde fallback nevypadá dobře
+                          Riziko: FOIT (Flash of Invisible Text)
+
+   font-display: optional → prohlížeč použije font jen pokud je v cache
+                             Dobré pro: výkon na prvním načtení
+                             Riziko: font se nemusí zobrazit vůbec
+
+   Doporučení: swap pro většinu případů.
+   ========================================================================== */
+
+/* ==========================================================================
+   VARIABLE FONTS — Proměnlivé fonty (2026 best practice)
+   ==========================================================================
+   Variable fonts obsahují všechny řezy v jednom souboru.
+   Menší celkový download, plynulá interpolace váhy.
+
+   Příklad s Inter Variable:
+   ─────────────────────────
+   Stáhni z: https://rsms.me/inter/ nebo Google Fonts (Download family → Variable)
+   ========================================================================== */
+
+/*
+@font-face {
+  font-family: 'Inter';
+  src: url('../fonts/inter/inter-variable.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+*/

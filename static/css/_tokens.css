@@ -1,0 +1,343 @@
+/* ==========================================================================
+   _tokens.css — Design Tokens (Proměnné / Vlastní vlastnosti)
+   ==========================================================================
+
+   Co jsou design tokens?
+   ----------------------
+   Design tokens jsou pojmenované hodnoty, které tvoří základ celého vizuálního
+   systému. Místo abys psal "16px" nebo "#3b82f6" napříč celým projektem,
+   definuješ je jednou tady a pak používáš název.
+
+   Výhody:
+   - Změníš jednu hodnotu → změní se celý projekt najednou
+   - Konzistence — nemůžeš omylem použít trochu jiný odstín modré
+   - Čitelnost — `var(--space-lg)` je jasné, `24px` ne
+
+   Použití v CSS:
+     padding: var(--space-md);
+     color: var(--color-text-primary);
+
+   Scope: Tokeny jsou definovány na :root = dostupné globálně v celém dokumentu.
+   ========================================================================== */
+
+
+@layer tokens {
+  :root {
+
+    /* ==========================================================================
+       BARVY — Color Palette
+       ==========================================================================
+       Struktura je dvouúrovňová:
+         1. Primitivní barvy  → konkrétní hex hodnoty (--_blue-500)
+         2. Sémantické barvy  → co ta barva ZNAMENÁ (--color-primary)
+
+       Nikdy nepoužívej primitivní barvy přímo v komponentách —
+       vždy použij sémantickou barvu. Pak stačí změnit sémantiku,
+       ne procházet všechna místa kde byl daný hex použit.
+       ========================================================================== */
+
+    /* — Primitivní paleta (interní, začínají podtržítkem jako konvence) — */
+    --_blue-100: #dbeafe;
+    --_blue-500: #3b82f6;
+    --_blue-600: #2563eb;
+    --_blue-700: #1d4ed8;
+
+    --_slate-50:  #f8fafc;
+    --_slate-100: #f1f5f9;
+    --_slate-200: #e2e8f0;
+    --_slate-300: #cbd5e1;
+    --_slate-500: #64748b;
+    --_slate-700: #334155;
+    --_slate-800: #1e293b;
+    --_slate-900: #0f172a;
+
+    --_red-500:   #ef4444;
+    --_green-500: #22c55e;
+    --_amber-500: #f59e0b;
+
+    /* — Sémantické barvy — */
+    /* Primární akcent (tlačítka, linky, focus stavy) */
+    --color-primary:       var(--_blue-500);
+    --color-primary-hover: var(--_blue-600);
+    --color-primary-dark:  var(--_blue-700);
+    --color-primary-light: var(--_blue-100);
+
+    /* Texty */
+    --color-text-primary:   var(--_slate-900);  /* Hlavní obsah */
+    --color-text-secondary: var(--_slate-500);  /* Popisky, metadata */
+    --color-text-disabled:  var(--_slate-300);  /* Neaktivní prvky */
+    --color-text-inverse:   #ffffff;            /* Text na tmavém pozadí */
+
+    /* Pozadí */
+    --color-bg-base:    #ffffff;              /* Hlavní pozadí stránky */
+    --color-bg-subtle:  var(--_slate-50);     /* Lehce odlišené plochy */
+    --color-bg-muted:   var(--_slate-100);    /* Karty, sekce */
+    --color-bg-overlay: rgba(15, 23, 42, 0.6);/* Modální overlay */
+
+    /* Ohraničení */
+    --color-border:        var(--_slate-200); /* Standardní border */
+    --color-border-strong: var(--_slate-300); /* Výraznější border */
+    --color-border-focus:  var(--_blue-500);  /* Focus ring */
+
+    /* Stavové barvy (feedback) — základní */
+    --color-success: var(--_green-500);
+    --color-warning: var(--_amber-500);
+    --color-error:   var(--_red-500);
+
+    /* Stavové barvy — rozšířené (bg = pozadí, fg = popředí/text, hover)
+       Použití: badge, alert, focus ring, hover stavy tlačítek.
+       Pojmenování: *-bg = světlé pozadí, *-fg = tmavý text na světlém pozadí */
+    --color-success-bg:   #dcfce7;
+    --color-success-fg:   #15803d;
+
+    --color-warning-bg:   #fef9c3;
+    --color-warning-fg:   #a16207;
+
+    --color-error-bg:     #fee2e2;
+    --color-error-fg:     #b91c1c;
+    --color-error-hover:  #dc2626;  /* Tmavší červená pro hover stav .btn--danger */
+    --color-error-focus:  rgba(239, 68, 68, 0.1); /* Focus ring pro error inputy */
+
+    /* ==========================================================================
+       TYPOGRAFIE — Typography Scale
+       ==========================================================================
+       Modular scale: každý krok je předchozí × 1.25 (Major Third).
+       Tím získáš vizuální harmonii — velikosti nejsou náhodné.
+
+       Pokud chceš jiný poměr:
+         1.125 = Major Second  (konzervativní, pro text-heavy weby)
+         1.25  = Major Third   (vyvážený — výchozí hodnota)
+         1.333 = Perfect Fourth (výrazný, pro marketing / landing pages)
+       ========================================================================== */
+
+    /* Rodiny písem */
+    --font-sans:  'Inter', 'Helvetica Neue', Arial, sans-serif;
+    --font-serif: 'Georgia', 'Times New Roman', serif;
+    --font-mono:  'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+
+    /* Velikosti (base = 1rem = 16px v prohlížeči) */
+    --text-xs:   0.75rem;   /*  12px — metadata, badges */
+    --text-sm:   0.875rem;  /*  14px — popisky, sekundární */
+    --text-base: 1rem;      /*  16px — tělo textu */
+    --text-lg:   1.125rem;  /*  18px — trochu větší tělo */
+    --text-xl:   1.25rem;   /*  20px — podnadpisy */
+    --text-2xl:  1.5rem;    /*  24px — h3 */
+    --text-3xl:  1.875rem;  /*  30px — h2 */
+    --text-4xl:  2.25rem;   /*  36px — h1 */
+    --text-5xl:  3rem;      /*  48px — hero nadpisy */
+    --text-6xl:  3.75rem;   /*  60px — display */
+
+    /* Řádkování (line-height) */
+    --leading-tight:  1.25; /* Nadpisy */
+    --leading-snug:   1.375;
+    --leading-normal: 1.5;  /* Tělo textu — optimální čitelnost */
+    --leading-relaxed:1.625;
+    --leading-loose:  2;    /* Velmi vzdušné, pro speciální případy */
+
+    /* Tučnost (font-weight) */
+    --weight-light:    300;
+    --weight-normal:   400;
+    --weight-medium:   500;
+    --weight-semibold: 600;
+    --weight-bold:     700;
+    --weight-black:    900;
+
+    /* Tracking (letter-spacing) */
+    --tracking-tight:  -0.025em; /* Velké nadpisy — trochu stáhnout */
+    --tracking-normal:  0;
+    --tracking-wide:    0.025em;
+    --tracking-wider:   0.05em;  /* Uppercase popisky */
+    --tracking-widest:  0.1em;
+
+    /* ==========================================================================
+       SPACING — Prostorová Škála
+       ==========================================================================
+       Základ je 4px (0.25rem). Vše je násobek čtyřky.
+       Tím zajistíš, že prvky přirozeně lícují na mřížce.
+       ========================================================================== */
+
+    --space-0:    0;
+    --space-px:   1px;
+    --space-0-5:  0.125rem;  /*  2px */
+    --space-1:    0.25rem;   /*  4px */
+    --space-2:    0.5rem;    /*  8px */
+    --space-3:    0.75rem;   /* 12px */
+    --space-4:    1rem;      /* 16px — base */
+    --space-5:    1.25rem;   /* 20px */
+    --space-6:    1.5rem;    /* 24px */
+    --space-7:    1.75rem;   /* 28px */
+    --space-8:    2rem;      /* 32px */
+    --space-10:   2.5rem;    /* 40px */
+    --space-12:   3rem;      /* 48px */
+    --space-16:   4rem;      /* 64px */
+    --space-20:   5rem;      /* 80px */
+    --space-24:   6rem;      /* 96px */
+    --space-32:   8rem;      /* 128px */
+
+    /* Aliasy pro čitelnost (volitelné, ale šikovné) */
+    --space-xs:  var(--space-2);   /*  8px */
+    --space-sm:  var(--space-3);   /* 12px */
+    --space-md:  var(--space-4);   /* 16px */
+    --space-lg:  var(--space-6);   /* 24px */
+    --space-xl:  var(--space-8);   /* 32px */
+    --space-2xl: var(--space-12);  /* 48px */
+    --space-3xl: var(--space-16);  /* 64px */
+
+    /* ==========================================================================
+       ZAOBLENÍ ROHŮ — Border Radius
+       ========================================================================== */
+
+    --radius-sm:   0.25rem;   /*  4px — input fields */
+    --radius-md:   0.5rem;    /*  8px — karty, tlačítka */
+    --radius-lg:   0.75rem;   /* 12px — větší karty */
+    --radius-xl:   1rem;      /* 16px — modaly */
+    --radius-2xl:  1.5rem;    /* 24px — výrazné zaoblení */
+    --radius-full: 9999px;    /* Pill / badge / avatar */
+
+    /* ==========================================================================
+       STÍNY — Box Shadow
+       ==========================================================================
+       Vrstvené stíny = realističtější efekt hloubky.
+       Pravidlo: světlý objekt → stín dolů a doprava (světlo zleva nahoře).
+       ========================================================================== */
+
+    --shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md:  0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                  0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-lg:  0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                  0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --shadow-xl:  0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                  0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+
+    /* Focus ring — přístupnost (accessibility) */
+    --shadow-focus: 0 0 0 3px var(--color-primary-light);
+
+    /* ==========================================================================
+       PŘECHODY & ANIMACE — Transitions & Animations
+       ==========================================================================
+       Konzistentní timing zajistí, že UI "cítí" jednotně.
+       ========================================================================== */
+
+    /* Délky */
+    --duration-fast:   100ms;  /* Hover stavy, okamžitá zpětná vazba */
+    --duration-base:   200ms;  /* Standardní přechody */
+    --duration-slow:   300ms;  /* Modaly, dropdown menu */
+    --duration-slower: 500ms;  /* Page transitions, hero animace */
+
+    /* Easing křivky */
+    --ease-linear: linear;
+    --ease-in:     cubic-bezier(0.4, 0, 1, 1);     /* Accelerate */
+    --ease-out:    cubic-bezier(0, 0, 0.2, 1);     /* Decelerate — nejčastější */
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);   /* Standardní */
+    --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1); /* Pružný efekt */
+
+    /* Granulární transition tokeny
+       ───────────────────────────────────────────────────────────────────
+       Proč ne "all"?
+       transition: all animuje i width, height, clip-path a další vlastnosti
+       které animovat nechceš — zpomaluje rendering a způsobuje
+       nepředvídatelné výsledky při změně layoutu.
+
+       Skládej podle potřeby komponenty:
+         .btn   { transition: var(--transition-color), var(--transition-transform); }
+         .modal { transition: var(--transition-fade); }
+         .card  { transition: var(--transition-base); }
+       ─────────────────────────────────────────────────────────────────── */
+
+    /* Barvy — nejčastější, pro tlačítka, linky, hover stavy */
+    --transition-color:
+      color            var(--duration-base) var(--ease-out),
+      background-color var(--duration-base) var(--ease-out),
+      border-color     var(--duration-base) var(--ease-out);
+
+    /* Stín — pro karty, modaly, focus stavy */
+    --transition-shadow:
+      box-shadow var(--duration-base) var(--ease-out);
+
+    /* Transform — pro hover posuny, scale efekty */
+    --transition-transform:
+      transform var(--duration-fast) var(--ease-out);
+
+    /* Průhlednost — pro fade in/out, loading stavy, overlaye */
+    --transition-fade:
+      opacity var(--duration-base) var(--ease-out);
+
+    /* Složený base token — pro komponenty kde chceš animovat vše najednou */
+    --transition-base:
+      var(--transition-color),
+      var(--transition-shadow),
+      var(--transition-transform),
+      var(--transition-fade);
+
+    /* ==========================================================================
+       Z-INDEX STACK — Vrstvení elementů
+       ==========================================================================
+       Pojmenovaný stack zabraňuje "z-index: 9999" válkám.
+       Vždy víš, co je nad čím.
+       ========================================================================== */
+
+    --z-below:    -1;   /* Za normálním flow */
+    --z-base:      0;   /* Výchozí */
+    --z-raised:   10;   /* Karty s hover shadow */
+    --z-dropdown: 100;  /* Dropdown menu */
+    --z-sticky:   200;  /* Sticky header */
+    --z-overlay:  300;  /* Overlay/backdrop */
+    --z-modal:    400;  /* Modální okna */
+    --z-toast:    500;  /* Notifikace / toasty */
+    --z-tooltip:  600;  /* Tooltipy — vždy nahoře */
+
+    /* ==========================================================================
+       LAYOUT — Šířky kontejnerů
+       ========================================================================== */
+
+    --container-sm:  640px;   /* Malý kontejner — blog post, formulář */
+    --container-md:  768px;   /* Střední */
+    --container-lg:  1024px;  /* Standardní stránka */
+    --container-xl:  1280px;  /* Širší layout */
+    --container-2xl: 1536px;  /* Full-width sekce */
+
+    /* Šířka obsahu pro čitelnost (optimum: 60–75 znaků) */
+    --prose-width: 65ch;
+
+  }
+
+  /* ==========================================================================
+     DARK MODE — Tmavý motiv
+     ==========================================================================
+     Přepíšeme jen sémantické tokeny — primitivní paleta zůstává stejná.
+     Díky tomu stačí ~10 řádků pro kompletní dark mode.
+     ========================================================================== */
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-text-primary:   var(--_slate-50);
+      --color-text-secondary: var(--_slate-300);
+      --color-text-disabled:  var(--_slate-700);
+
+      --color-bg-base:   var(--_slate-900);
+      --color-bg-subtle: var(--_slate-800);
+      --color-bg-muted:  var(--_slate-700);
+
+      --color-border:        var(--_slate-700);
+      --color-border-strong: var(--_slate-500);
+
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4),
+                   0 2px 4px -2px rgba(0, 0, 0, 0.4);
+
+      /* Stavové barvy — tmavší pozadí, světlejší text pro dark mode.
+         Světlé hodnoty (#dcfce7 atd.) by na tmavém pozadí
+         vypadaly jako příliš výrazné barevné plochy. */
+      --color-success-bg:  #14532d;  /* tmavě zelená */
+      --color-success-fg:  #86efac;  /* světle zelená */
+
+      --color-warning-bg:  #713f12;  /* tmavě žlutá */
+      --color-warning-fg:  #fde68a;  /* světle žlutá */
+
+      --color-error-bg:    #7f1d1d;  /* tmavě červená */
+      --color-error-fg:    #fca5a5;  /* světle červená */
+      --color-error-focus: rgba(239, 68, 68, 0.2); /* více viditelný focus ring */
+    }
+  }
+
+}
