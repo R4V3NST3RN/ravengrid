@@ -3,7 +3,7 @@
 Vrstvená CSS architektura postavená na nativních `@layer`. Design tokeny, moderní reset, CSS Grid,
 Container Queries, dark mode, volitelná PostCSS pipeline. Bez JS frameworků, bez CSS závislostí třetích stran.
 
-Extrahováno z osobního projektu [Ravenstern](https://ravenstern.cz) — od začátku navrženo jako soběstačný systém.
+Extrahováno z osobního projektu [Ravenstern](https://ravenstern.com) — od začátku navrženo jako soběstačný systém.
 
 ---
 
